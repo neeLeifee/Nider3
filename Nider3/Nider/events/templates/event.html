@@ -1,0 +1,15 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Событие{% endblock %}
+
+{% block content %}
+<div class="features">
+    <h1>{{event.name}}</h1><br>
+    <ul>
+        <li>{{event.description}}</li>
+        <li>{{event.address}}</li>
+        <li>{{event.date}}</li>
+        <li>{{event.hobby}}</li>
+    </ul>
+</div>
+{% endblock %}

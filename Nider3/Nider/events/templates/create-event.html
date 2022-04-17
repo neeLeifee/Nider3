@@ -1,0 +1,14 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Создание события{% endblock %}
+
+{% block content %}
+<div class="features">
+    <h1>Событие</h1><br>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}<br>
+        <button type="submit" class="btn btn-success">Создать</button>
+    </form>
+</div>
+{% endblock %}

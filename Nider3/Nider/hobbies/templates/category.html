@@ -1,0 +1,27 @@
+{% extends 'main/base.html' %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block content %}
+<h1>{{category.name}}</h1>
+<br>
+<ul class="list-group">
+    {% for hobby in hobbies %}
+        <li class="list-group-item">
+            <h4>{{ hobby.name }}</h4>
+            <p>{{ hobby.description }}</p>
+            {% if hobby not in my_hobbies %}
+                <form action="{% url 'add_hobby' hobby.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Добавить</button>
+                </form>
+            {% else %}
+                <form action="{% url 'remove_hobby' hobby.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Убрать</button>
+                </form>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

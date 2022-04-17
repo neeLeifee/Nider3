@@ -1,0 +1,101 @@
+{% extends 'main/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+    <div class="features">
+        <h1>{{ title }}</h1><br>
+        {% if user.is_authenticated %}
+            <div id="map" style="width: 1295px; height: 600px"></div>
+                <script>
+                    ymaps.ready(init);
+                    function init () {
+                        var myPlacemark,
+                            myMap = new ymaps.Map('map', {
+                                center: [55.753994, 37.622093],
+                                zoom: 13
+                            }, {
+                                searchControlProvider: 'yandex#search'
+                            });
+
+                        myMap.events.add('click', function (e) {
+                            var coords = e.get('coords');
+
+                            // Если метка уже создана – просто передвигаем ее.
+                            if (myPlacemark) {
+                                myPlacemark.geometry.setCoordinates(coords);
+                            }
+                            // Если нет – создаем.
+                            else {
+                                myPlacemark = createPlacemark(coords);
+                                myMap.geoObjects.add(myPlacemark);
+                                // Слушаем событие окончания перетаскивания на метке.
+                                myPlacemark.events.add('dragend', function () {
+                                    getAddress(myPlacemark.geometry.getCoordinates());
+                                });
+                            }
+                            getAddress(coords);
+                        });
+
+                        var myPlacemark = new ymaps.Placemark([47.60, 42.10], {
+                            iconCaption: 'поиск...'
+                        }, {
+                            preset: 'islands#violetDotIconWithCaption',
+                            draggable: true
+                        });
+
+                        myPlacemark.events.add('contextmenu', function (e) {
+                            if ($('#menu').css('display') == 'block') {
+                                $('#menu').remove();
+                            } else {
+                                var menuContent =
+                                    '<div id="menu">\
+                                        <ul id="menu_list">\
+                                            <li>Название: <br /> <input type="text" name="icon_text" /></li>\
+                                            <li>Подсказка: <br /> <input type="text" name="hint_text" /></li>\
+                                            <li>Балун: <br /> <input type="text" name="balloon_text" /></li>\
+                                        </ul>\
+                                    <div align="center"><input type="submit" value="Сохранить" /></div>\
+                                    </div>';
+
+                                $('body').append(menuContent);
+
+                                $('#menu').css({
+                                    left: e.get('pagePixels')[0],
+                                    top: e.get('pagePixels')[1]
+                                });
+
+                                $('#menu input[name="icon_text"]').val(myPlacemark.properties.get('iconContent'));
+                                $('#menu input[name="hint_text"]').val(myPlacemark.properties.get('hintContent'));
+                                $('#menu input[name="balloon_text"]').val(myPlacemark.properties.get('balloonContent'));
+
+                                $('#menu input[type="submit"]').click(function () {
+                                    myPlacemark.properties.set({
+                                        iconContent: $('input[name="icon_text"]').val(),
+                                        hintContent: $('input[name="hint_text"]').val(),
+                                        balloonContent: $('input[name="balloon_text"]').val()
+                                    });
+                                    $('#menu').remove();
+                                });
+                            }
+                        });
+
+                        myMap.geoObjects.add(myPlacemark);
+                    }
+                </script>
+            <br><br>
+
+            <ul class="list-group">
+                {% for category in categories %}
+                <li class="list-group-item">
+                    <a href="{% url 'category' category.id %}"><h4>{{category.name}}</h4></a>
+                </li>
+                {% endfor %}
+            </ul>
+            <br><br><br><br>
+        {% else %}
+            <h3>Контент доступен только при регистрации...</h3>
+        {% endif %}
+
+    </div>
+{% endblock %}

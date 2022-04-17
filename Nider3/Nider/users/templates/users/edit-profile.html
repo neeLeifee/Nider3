@@ -1,0 +1,17 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Редактирование Профиля{% endblock %}
+
+{% block content %}
+    <div class="features">
+        <h1>Профиль</h1><br>
+        <form method="POST">
+            {% csrf_token %}
+            {{ user_form.as_p }}
+            {{ profile_form.as_p }}
+            <br>
+            <button type="submit" class="btn btn-success">Изменить</button>
+        </form>
+    </div>
+{% endblock %}
+
